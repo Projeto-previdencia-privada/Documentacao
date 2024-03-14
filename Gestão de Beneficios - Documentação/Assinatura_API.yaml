@@ -1,0 +1,155 @@
+swagger: '2.0'
+info:
+  description: API para o sistema de gestão de Benefícios de uma previdência privada
+  title: Gestão de Benefícios
+  version: 1.0.0
+host: localhost:8080
+tags:
+- name: "Beneficios"
+  description: "Tudo sobre beneficios cadastrados no sistema."
+- name: "Concessão"
+  description: "Tudo sobre os benefícios cedidos no sistema."
+schemes:
+  - http
+basePath: /
+paths:
+  /beneficios:
+    post:
+      tags: 
+      - "Beneficios"
+      summary: Cadastra um beneficio no sistema.
+      description: ""
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "beneficio"
+        description: "Benefício que ira ser adicionado"
+        required: true
+        schema:
+          type: object
+          properties:
+            nome:
+              type: string
+              example: Auxílio Doença
+            valor_percentual:
+              type: integer
+              maximum: 100
+              example: 93
+            contribuicao_minima:
+              type: integer
+              example: 12
+            individual:
+              type: boolean
+              example: true
+      responses:
+        "201":
+          description: Beneficio criado
+        "400":
+          description: Input invalido
+    put:
+      tags: 
+      - "Beneficios"
+      summary: Modifica um beneficio no sistema.
+      parameters:
+      - in: "body"
+        name: "beneficio"
+        description: "Benefício que ira ser alterado"
+        required: true
+        schema:
+            type: object
+            properties:
+              id_beneficio:
+                type: integer
+                example: 102
+              nome:
+                type: string
+                example: Auxílio Doença
+              valor_percentual:
+                type: integer
+                maximum: 100
+                example: 90
+              contribuicao_minima:
+                type: integer
+                example: 17
+              individual:
+                type: boolean
+                example: false
+      responses:
+        "200":
+          description: Beneficio alterado
+        "401":
+          description: Benecio não localizado
+    delete:
+      tags: 
+      - "Beneficios"
+      summary: Apaga um beneficio no sistema.
+      parameters:
+      - in: "body"
+        name: "beneficio"
+        description: "Benefício que irá ser deletado"
+        required: true
+        schema:
+            type: string
+            properties:
+              id_beneficio:
+                type: integer
+                example: 102
+      responses:
+        "200":
+          description: Beneficio apagado com sucesso
+        "401":
+          description: Beneficio não localizado no sistema
+  /concessao/soma/{cpf}:
+    get:
+      tags: 
+      - "Concessão"
+      summary: Obtém a soma dos benefícios cedidos ao cpf inserido ativos atualmente.
+      parameters:
+        - in: path
+          name: cpf
+          required: true
+          type: integer
+          description: CPF do usuário requerente 
+      responses:
+        '200':
+          description: Sucesso na procura!
+          schema:
+            type: object
+            properties:
+              valor_total:
+                type: integer
+                example: 1200
+        '400':
+          description: CPF inválido.
+        '401':
+          description: CPF não encontrado no sistema.
+  /concessao/{cpf}/{id_beneficio}:
+    post:
+      tags:
+      - "Concessão"
+      summary: Realiza o pedido de concessão de benefício específico no cpf indicado
+      parameters:
+      - in: "path"
+        name: cpf
+        required: true
+        type: integer
+        description: CPF do usuário requerente
+      - in: "path"
+        name: id_beneficio
+        required: true
+        type: integer
+        description: Id do benefício para concessão.
+      responses:
+        '199':
+          description: Concessão negada.
+        '200':
+          description: Concessão autorizada.
+        '400':
+          description: Concessão inválida.
+        '401':
+          description: CPF não encontrado no sistema.
+      
+      
