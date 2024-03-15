@@ -12,7 +12,7 @@ Este repositório de documentação serve como um hub centralizado, oferecendo a
 
 Este repositório está organizado da seguinte forma:
 
-- Gestão de Contribuintes -Documentação
+- [Gestão de Contribuintes -Documentação](https://github.com/Projeto-previdencia-privada/Documentacao/tree/main/Gest%C3%A3o%20de%20Contribuintes%20-%20Documenta%C3%A7%C3%A3o)
 - [Gestão de Contribuição -Documentação](https://github.com/Projeto-previdencia-privada/Documentacao/tree/main/Gest%C3%A3o%20de%20Contribui%C3%A7%C3%B5es%20-%20Documenta%C3%A7%C3%A3o)
-- Gestão de Benefícios -Documentação
-- Gestão de Empréstimos -Documentação
+- [Gestão de Benefícios -Documentação](https://github.com/Projeto-previdencia-privada/Documentacao/tree/main/Gest%C3%A3o%20de%20Beneficios%20-%20Documenta%C3%A7%C3%A3o)
+- [Gestão de Empréstimos -Documentação](https://github.com/Projeto-previdencia-privada/Documentacao/tree/main/Gest%C3%A3o%20de%20Empr%C3%A9stimos%20-%20Documenta%C3%A7%C3%A3o)
