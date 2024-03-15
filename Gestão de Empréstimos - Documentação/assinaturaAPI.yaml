@@ -1,0 +1,162 @@
+openapi: 3.0.3
+info:
+  title: API Empréstimos
+  description: Essa api é destinada à  validação e cadastro de emprestimos consignados.
+  version: 1.0.0
+servers:
+  - url: https://localhost/api/v1/emprestimos
+tags:
+  - name: Empréstimo
+    description: Comandos responsáveis pela validação e manipulação de empréstimos individuais.
+  
+paths:
+  /cadastraremprestimo:
+    post:
+      tags:
+        - Empréstimo
+      summary: Verificação se um empréstimo é valido ou não
+      description: Verifica se um empréstimo é valido ou não, caso seja, a chamada retorna um código identificador de uma linha na tabela de empréstimos.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                cpf:
+                  type: string
+                  example: "12312312312"
+                qtd-parcelas:
+                  type: integer
+                  example: 7
+                valor-parcela:
+                  type: number
+                  example: 427.69
+        required: true
+      responses:
+        '200':
+          description: Verificação realizada. Empréstimo não pode ser cadastrado, pois a adição da parcela excede o saldo mensal de crédito consignado.
+        '201':
+          description: Verificação realizada. Empréstimo cadastrado no sistema e código identificador do emprestimo enviado.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id-emprestimo:
+                    type: string
+                    example: "53aebbf5-bac8-4985-9983-667d6c639da9"
+  /finalizaremprestimo:  
+    put:
+      tags:
+        - Empréstimo
+      summary: Dado o identificador do empréstimo, este é marcado como concluido.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id-emprestimo:
+                  type: string
+                  example: "46bff86c-de7f-4f7c-a261-b5acef241172"
+        required: true
+      responses:
+        '200':
+          description: Empréstimo maracado como concluido
+        '404':
+          description: Identificador de empréstimo não encontrado
+          
+  /vizualizaremprestimo:
+    get:
+      tags:
+        - Empréstimo
+      summary: Dado o identificador do empréstimo, retorna todas as informações armazenadas sobre ele.
+      parameters:
+        - name: id-emprestimo
+          in: query
+          required: true
+          schema:
+            type: string
+            example: 'd4565f5a-08b3-490c-9c64-726f2adafae6'
+      responses:
+        '200':
+          description: Empréstimo encontrado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id-emprestimo:
+                    type: string
+                    example: "d4565f5a-08b3-490c-9c64-726f2adafae6"
+                  cpf:
+                    type: string
+                    example: "52438127290"
+                  valor-parcela:
+                    type: number
+                    example: 720.43
+                  qtd-parcelas:
+                    type: integer
+                    example: 24
+                  data-emprestimo:
+                    type: string
+                    example: "2024-04-20"
+                  status:
+                    type: string
+                    example: "Ativo"
+                  
+        '404':
+          description: Id do empréstimo não encontrado
+  /alterarvalor:
+    put:
+      tags:
+        - Empréstimo
+      summary: Altera o valor das parcelas
+      
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id-emprestimo:
+                  type: string
+                  example: "2856aa3b-3d27-4b37-9c25-35ce29c1edb7"
+                novo-valor:
+                  type: number
+                  example: 1024.72
+        required: true
+      responses:
+        '201':
+          description: Novo valor cadastrado
+
+        '400':
+          description: Formato do valor da parcela inválido
+        '404':
+          description: Id do empréstimo não encontrado
+  /alterarparcela:
+    put:
+      tags:
+        - Empréstimo
+      summary: Altera a quantidade de parcelas.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id-emprestimo:
+                  type: string
+                  example: "522383a0-3dd4-4019-a264-c438550391c3"
+                  
+                qtd-parcelas:
+                  type: integer
+                  example: 24
+      responses:
+        '201':
+          description: Nova quantidade de parcelas registradas com sucesso
+        '400':
+          description: Tipo do valor de quantidade de parcelas inválido
+        '404':
+          description: ID do empréstimo não encontrado
+    
