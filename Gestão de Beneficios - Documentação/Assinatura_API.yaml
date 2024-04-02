@@ -121,16 +121,14 @@ paths:
             properties:
               valor_total:
                 type: integer
-                example: 1200
+                example: 1200.34
         '400':
           description: CPF inválido.
-        '401':
-          description: CPF não encontrado no sistema.
-  /concessao/{cpf}/{id_beneficio}:
+  /concessao/individual/{cpf}/{id_beneficio}:
     post:
       tags:
       - "Concessão"
-      summary: Realiza o pedido de concessão de benefício específico no cpf indicado
+      summary: Realiza o pedido de concessão de benefício específico no cpf indicado para si mesmo
       parameters:
       - in: "path"
         name: cpf
@@ -151,5 +149,26 @@ paths:
           description: Concessão inválida.
         '401':
           description: CPF não encontrado no sistema.
+  /concessao/{cpf}/{id_beneficio}:
+    post:
+      tags:
+      - "Concessão"
+      summary: Realiza o pedido de concessão de benefício específico no cpf indicado para outro cpf ser beneficiado
+      parameters:
+      - in: "path"
+        name: cpf
+        required: true
+        type: integer
+        description: CPF do usuário requerente
+      - in: "path"
+        name: id_beneficio
+        required: true
+        type: integer
+        description: Id do benefício para concessão.
+      responses:
+        '200':
+          description: Concessão autorizada.
+        '400':
+          description: Concessão inválida.
       
       
