@@ -8,6 +8,10 @@ O projeto Previdência Privada é uma solução moderna e integrada desenvolvida
 
 Este repositório de documentação serve como um hub centralizado, oferecendo aos desenvolvedores, administradores de sistema e partes interessadas acesso imediato a toda a documentação técnica necessária para entender, implementar e utilizar o sistema.
 
+## Assinaturas com Swagger
+
+Algumas assinaturas de API devem ser lidas usando o [Swagger Editor](https://editor.swagger.io), pegando o codigo das assinaturas em .yaml e inserindo no editor podendo assim ve-las do jeito esperado.
+
 ## Estrutura do Repositório
 
 Este repositório está organizado da seguinte forma:
