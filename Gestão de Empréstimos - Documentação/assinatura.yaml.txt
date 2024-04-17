@@ -282,7 +282,7 @@ paths:
                   type: string
                   example: "522383a0-3dd4-4019-a264-c438550391c3"
                   
-                qtd-parcelas:
+                novo-valor:
                   type: integer
                   example: 24
       responses:
