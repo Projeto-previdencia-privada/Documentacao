@@ -4,16 +4,25 @@ info:
   description: Essa api é destinada à  validação e cadastro de emprestimos consignados.
   version: 1.0.0
 servers:
-  - url: https://localhost/api/v1/emprestimos
+  - url: https://localhost/api/v1/
 tags:
-  - name: Empréstimo
+  - name: Empréstimos
     description: Comandos responsáveis pela validação e manipulação de empréstimos individuais.
   
+  - name: Instituições financeiras
+    description: Endpoints responsáveis pela manipulação e cadastro de instituições financeiras  
+  
+components:
+  securitySchemes:
+    apiKey: 
+      type: http
+      scheme: bearer
+  
 paths:
-  /cadastraremprestimo:
+  /emprestimos/cadastro:
     post:
       tags:
-        - Empréstimo
+        - Empréstimos
       summary: Verificação se um empréstimo é valido ou não
       description: Verifica se um empréstimo é valido ou não, caso seja, a chamada retorna um código identificador de uma linha na tabela de empréstimos.
       requestBody:
@@ -33,7 +42,7 @@ paths:
                   example: 427.69
         required: true
       responses:
-        '200':
+        '403':
           description: Verificação realizada. Empréstimo não pode ser cadastrado, pois a adição da parcela excede o saldo mensal de crédito consignado.
         '201':
           description: Verificação realizada. Empréstimo cadastrado no sistema e código identificador do emprestimo enviado.
@@ -45,35 +54,34 @@ paths:
                   id-emprestimo:
                     type: string
                     example: "53aebbf5-bac8-4985-9983-667d6c639da9"
-  /finalizaremprestimo:  
+  /emprestimos/{id-emprestimo}/concluido:  
     put:
       tags:
-        - Empréstimo
+        - Empréstimos
       summary: Dado o identificador do empréstimo, este é marcado como concluido.
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                id-emprestimo:
-                  type: string
-                  example: "46bff86c-de7f-4f7c-a261-b5acef241172"
-        required: true
+      parameters:
+        - name: id-emprestimo
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 'd4565f5a-08b3-490c-9c64-726f2adafae6' 
       responses:
         '200':
           description: Empréstimo maracado como concluido
         '404':
           description: Identificador de empréstimo não encontrado
           
-  /vizualizaremprestimo:
+  /emprestimos/{id-emprestimo}:
     get:
       tags:
-        - Empréstimo
+        - Empréstimos
       summary: Dado o identificador do empréstimo, retorna todas as informações armazenadas sobre ele.
+      security:
+        - apiKey: []
       parameters:
         - name: id-emprestimo
-          in: query
+          in: path
           required: true
           schema:
             type: string
@@ -107,56 +115,163 @@ paths:
                   
         '404':
           description: Id do empréstimo não encontrado
-  /alterarvalor:
-    put:
+  
+  /emprestimos/{cpf}:
+    get:
       tags:
-        - Empréstimo
-      summary: Altera o valor das parcelas
+        - Empréstimos
+      summary: Retorna todos os empréstimos que uma instituição possui com um CPF.
+      security:
+        - apiKey: []
+      parameters:
+        - name: cpf
+          in: path
+          required: true
+          schema:
+            type: string
+            example: "54689183074"
       
+      responses:
+        '200':
+          description: Instituição válida e empréstimos encontrados
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id-emprestimo:
+                      type: string
+                      example: "d4565f5a-08b3-490c-9c64-726f2adafae6"
+                    cpf:
+                      type: string
+                      example: "52438127290"
+                    valor-parcela:
+                      type: number
+                      example: 720.43
+                    qtd-parcelas:
+                      type: integer
+                      example: 24
+                    data-emprestimo:
+                      type: string
+                      example: "2024-04-20"
+                    status:
+                      type: string
+                      example: "Ativo"
+                  
+                  
+        '401':
+          description: Token de autorização inválido
+        '404':
+          description: CPF não encontrado
+  
+  /instituicoes/cadastro:
+    post:
+      tags:
+        - Instituições financeiras
+      summary: Cadastra uma intituição financeira no sistema
       requestBody:
         content:
           application/json:
             schema:
               type: object
               properties:
-                id-emprestimo:
+                cnpj:
                   type: string
-                  example: "2856aa3b-3d27-4b37-9c25-35ce29c1edb7"
-                novo-valor:
-                  type: number
-                  example: 1024.72
+                  example: "49549885000171"
+                nome:
+                  type: string
+                  example: Banco do Brasil
         required: true
       responses:
         '201':
-          description: Novo valor cadastrado
-
+          description: Instituição criada com sucesso
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  chave-api:
+                    type: string
+                    example: "AIzaSyClzfrOzB818x55FASHvX4JuGQciR9lv7q"
         '400':
-          description: Formato do valor da parcela inválido
+          description: Formato de requisição inválido
+  
+  /instituicoes/{cnpj}:
+    get:
+      tags:
+        - Instituições financeiras
+      summary: Retorna informações sobre uma instituição financeira
+      parameters:
+        - name: cnpj
+          in: path
+          required: true
+          schema:
+            type: string
+            example: "49549885000171"
+      responses:
+        '200':
+          description: Instituição encontrada
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  cnpj:
+                    type: string
+                    example: "26677614000104"
+                  nome:
+                    type: string
+                    example: "Banco de Brasília"
         '404':
-          description: Id do empréstimo não encontrado
-  /alterarparcela:
+          description: CNPJ não encontrado
+    delete:
+      tags:
+        - Instituições financeiras
+      summary: Exclui uma instituição financeira
+      security:
+        - apiKey: []
+      parameters:
+        - name: cnpj
+          in: path
+          required: true
+          schema:
+            type: string
+            example: "16045782000115"
+      responses:
+        '200':
+          description: Instituição excluída com sucesso.
+        '401':
+          description: Chave de acesso inválida.
+        '404':
+          description: CNPJ não encontrado.
+  
+  /instituicoes/{cnpj}/chave:
     put:
       tags:
-        - Empréstimo
-      summary: Altera a quantidade de parcelas.
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                id-emprestimo:
-                  type: string
-                  example: "522383a0-3dd4-4019-a264-c438550391c3"
-                  
-                novo-valor:
-                  type: integer
-                  example: 24
+        - Instituições financeiras
+      summary: Gera uma nova chave de acesso que substitui a anterior
+      security:
+        - apiKey: []
+      parameters:
+        - name: cnpj
+          in: path
+          required: true
+          schema:
+            type: string
+            example: "75788717000149"
       responses:
-        '201':
-          description: Nova quantidade de parcelas registradas com sucesso
-        '400':
-          description: Tipo do valor de quantidade de parcelas inválido
-        '404':
-          description: ID do empréstimo não encontrado
-    
+        '200':
+          description: "Chave de acesso atualizada com sucesso"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  chave-api:
+                    type: string
+                    example: "AIzaSyClzfrOzB818x55FASHvX4JuGQciR9lv7q"
+        '401':
+          description: Token de autorização inválido
+  
